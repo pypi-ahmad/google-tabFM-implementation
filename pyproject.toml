@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "google-tabfm-implementation"
+version = "0.1.0"
+description = "TabFM PyTorch CUDA benchmark starter"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "tabfm[pytorch]>=1.0.0",
+  "polars>=1.31.0",
+  "pandas>=2.2.0",
+  "scikit-learn>=1.5.0",
+  "jupyter>=1.1.1",
+  "matplotlib>=3.9.0",
+  "seaborn>=0.13.2",
+  "loguru>=0.7.2",
+  "xgboost>=3.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2.0",
+  "nbconvert>=7.16.0",
+  "ipykernel>=6.29.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tabfm_benchmark"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+

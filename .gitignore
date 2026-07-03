@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+artifacts/
+*.pyc
+
+# Keep repository publishable: raw datasets and model checkpoints are local-only.
+data/raw/
+problems/**/data/raw/
+problems/**/data/models/
