@@ -1,5 +1,10 @@
 # Google TabFM Implementation Handbook
 
+> **Looking to learn TabFM?** This handbook is the **operational/maintainer manual** —
+> CI, releases, and runtime internals. If you want to *learn TabFM itself*, start at
+> [`docs/00-overview.md`](docs/00-overview.md) instead; the numbered path there
+> (`docs/00` → `docs/10`) is this repository's teaching material.
+
 ## 1. Purpose
 This handbook is the operational manual for the `google-tabFM-implementation` repository.
 It explains what the project does, how it is structured, how to run it safely, what outputs to expect, and how to debug common failures.
@@ -13,14 +18,20 @@ This document is written from repository evidence:
 ---
 
 ## 2. Glossary
-- **TabFM**: Google tabular foundation model APIs used through the `tabfm` package.
-- **Checkpoint**: Serialized model weights (`pytorch_model.bin`) used by TabFM loaders.
+
+TabFM-specific concepts (in-context learning, zero-shot, ensemble preset,
+calibration) are explained from first principles in
+[`docs/04-core-concepts.md`](docs/04-core-concepts.md) — not repeated here.
+This glossary covers only this repository's own operational terms:
+
+- **TabFM**: Google's tabular foundation model, used in this repo via the `tabfm` PyPI package.
+- **Checkpoint**: Serialized model weights (`pytorch_model.bin`) used by TabFM's PyTorch loader.
 - **Benchmark portfolio**: Multi-dataset benchmark defined in `src/tabfm_benchmark/datasets.py`.
-- **E2E**: End-to-end notebook execution plus artifact validation.
-- **Context cap**: Maximum rows used for TabFM fit via `TABFM_CONTEXT_MAX_ROWS`.
-- **Eval cap**: Maximum evaluation rows for comparisons via `TABFM_EVAL_MAX_ROWS`.
-- **Fast mode**: Lighter runtime mode controlled by `TABFM_FAST_MODE=1`.
-- **Champion model**: Best model selected in each notebook and written into runtime metadata JSON.
+- **E2E**: End-to-end notebook execution plus artifact validation, orchestrated by `scripts/run_strict_e2e.py`.
+- **Context cap**: This repo's own convention (`TABFM_CONTEXT_MAX_ROWS` env var) for capping rows used for TabFM fit — not a `tabfm` package setting. See `docs/06-training-or-usage-workflows.md §3`.
+- **Eval cap**: This repo's own convention (`TABFM_EVAL_MAX_ROWS` env var) for capping evaluation rows.
+- **Fast mode**: This repo's own convention (`TABFM_FAST_MODE=1` env var) for a lighter runtime profile in CI.
+- **Champion model**: This repo's term for the best model variant selected in each notebook and written into runtime metadata JSON.
 - **Threshold curve**: Sweep of score cutoff vs policy/business outcomes.
 - **Top-k campaign**: Policy targeting top proportion of high-risk users.
 
@@ -87,6 +98,7 @@ From `pyproject.toml` and notebook imports:
 - `jupyter`, `nbconvert`, `ipykernel`: notebook authoring and execution.
 - `matplotlib`, `seaborn`: visualization in notebooks.
 - `loguru`: structured notebook/script logging.
+- `safetensors`: reads Hugging Face `.safetensors` checkpoints in `scripts/fetch_tabfm_weights.py` (see 14.3 — works around an upstream `tabfm==1.0.0` packaging mismatch).
 - `pytest`: unit/integration test suite for package behavior.
 
 ---
@@ -94,13 +106,20 @@ From `pyproject.toml` and notebook imports:
 ## 7. Folder Structure
 ```text
 .
+|-- docs/                         # zero-to-mastery learning path (00-overview.md ... 10-next-steps.md)
+|-- examples/
+|   |-- 01_minimal_classification.py
+|   |-- 02_minimal_regression.py
+|   |-- 03_default_vs_ensemble.py
+|   `-- 04_churn_baseline_comparison.py
 |-- src/tabfm_benchmark/
 |   |-- benchmark.py
 |   |-- datasets.py
 |   `-- types.py
 |-- scripts/
 |   |-- run_benchmark.py
-|   `-- run_strict_e2e.py
+|   |-- run_strict_e2e.py         # internal CI/E2E runner, not a learning example
+|   `-- fetch_tabfm_weights.py    # converts HF safetensors -> pytorch_model.bin (see 14.3)
 |-- tests/
 |   |-- test_schema.py
 |   |-- test_metrics.py
@@ -108,6 +127,7 @@ From `pyproject.toml` and notebook imports:
 |   |-- test_integration_runner.py
 |   `-- test_class_guard.py
 |-- notebooks/
+|   |-- 00_beginner_walkthrough.ipynb
 |   |-- tabfm_quickstart_benchmark.ipynb
 |   `-- tabfm_telco_churn_production.ipynb
 |-- problems/
@@ -197,9 +217,12 @@ Notebook orchestrator:
 ---
 
 ## 10. Configuration and Environment Variables
-Common variables found in notebooks and strict E2E runner:
+Common variables found in notebooks and strict E2E runner. **None of these
+are part of the `tabfm` PyPI package itself** — they are this repository's
+own conventions, read by this repo's notebooks/scripts only. See
+`docs/06-training-or-usage-workflows.md §3` for the full distinction.
 
-### 10.1 Global TabFM controls
+### 10.1 This repo's TabFM-related env vars
 - `TABFM_DEVICE` (`auto|cpu|cuda`)
 - `TABFM_CONTEXT_MAX_ROWS`
 - `TABFM_EVAL_MAX_ROWS`
@@ -293,8 +316,18 @@ Fix:
 Symptom from earlier strict E2E logs:
 - `FileNotFoundError: Weights not found at ... pytorch_model.bin`
 
+Root cause (verified, upstream): `tabfm==1.0.0`'s automatic download path
+looks for `pytorch_model.bin`, but the files published at
+`google/tabfm-1.0.0-pytorch` on Hugging Face are `model.safetensors`. This
+is a packaging mismatch in the released `tabfm` package, not an
+environment problem. Full writeup: `docs/08-troubleshooting.md#missing-checkpoint-file-on-a-fresh-install`.
+
 Fix:
-- set `TABFM_CHECKPOINT_PATH` to a valid checkpoint, or allow notebook checkpoint download path to run.
+- Run `uv run python scripts/fetch_tabfm_weights.py --task both` once to
+  download the safetensors weights and re-save them in the `.bin` format
+  `load()` expects (tensor names are identical between formats — verified
+  with `strict=True` state-dict loading), then set `TABFM_CHECKPOINT_PATH`
+  to the output directory it prints.
 
 ### 14.4 GitHub CLI authentication setup
 To authenticate on a new environment:
@@ -401,4 +434,4 @@ This keeps repository pushes reliable and avoids GitHub file-size violations.
 ---
 
 ## 20. License Reminder
-TabFM source code is Apache-2.0, but released TabFM weights used by notebook workflows are non-commercial licensed. Confirm downstream licensing before commercial deployment.
+TabFM source code is Apache-2.0. Released TabFM model weights (used by every notebook workflow in this repo) are under the separate **"TabFM Non-Commercial License v1.0"** — a bespoke Google license (verified from the license text published alongside the Hugging Face model card) that restricts use to non-commercial testing/evaluation/research and additionally prohibits redistribution. Confirm downstream licensing before any commercial deployment. Full explanation: `docs/09-faq.md#licensing`.

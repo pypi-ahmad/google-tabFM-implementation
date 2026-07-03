@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "google-tabfm-implementation"
-version = "0.1.0"
-description = "TabFM PyTorch CUDA benchmark starter"
+version = "2.0.0"
+description = "Zero-to-mastery learning path and production-style benchmark suite for Google's TabFM"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -18,6 +18,7 @@ dependencies = [
   "seaborn>=0.13.2",
   "loguru>=0.7.2",
   "xgboost>=3.2.0",
+  "safetensors>=0.8.0",
 ]
 
 [project.optional-dependencies]

@@ -1,4 +1,18 @@
 #!/usr/bin/env python3
+"""Internal CI/E2E regression runner — not a learning example.
+
+Executes every notebook under problems/ via `jupyter nbconvert --execute`,
+retrying with progressively smaller context/row-sampling profiles on
+out-of-memory signatures, then validates that each problem's expected
+artifacts were produced and writes a run report
+(artifacts/strict_e2e_run_report.{csv,md}).
+
+If you're learning TabFM, this is not where to start — see
+docs/00-overview.md and the notebooks under notebooks/ and problems/
+themselves. This script exists to keep those notebooks honest in CI, not to
+teach TabFM usage.
+"""
+
 from __future__ import annotations
 
 import argparse

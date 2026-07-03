@@ -1,5 +1,89 @@
 # Release Notes
 
+## v2.0.0 - Zero-to-Mastery Learning Path
+
+This is a ground-up educational overhaul, not an incremental patch. The
+repository's original benchmark/production code is preserved and improved,
+but the project is now a genuine "zero to mastery" TabFM curriculum with a
+numbered learning path, runnable minimal-to-practical examples, an
+interactive beginner notebook, and a real upstream bug found, verified, and
+fixed along the way.
+
+### Added
+- **`docs/00-overview.md` → `docs/10-next-steps.md`**: an 11-page, numbered
+  learning path — what TabFM is, prerequisites, installation, first run,
+  core concepts (in-context learning, zero-shot, architecture, the ensemble
+  preset, a full glossary), working with data, usage workflows, evaluation
+  methodology, troubleshooting, FAQ, and next steps. Every page defines its
+  jargon on first use and cites primary sources for every factual claim.
+- **`examples/`**: four runnable, minimal-to-practical scripts
+  (`01_minimal_classification.py`, `02_minimal_regression.py`,
+  `03_default_vs_ensemble.py`, `04_churn_baseline_comparison.py`), each
+  executed end to end in this repo's own reference environment to capture
+  real, verified expected output — not illustrative numbers.
+- **`notebooks/00_beginner_walkthrough.ipynb`**: an interactive, heavily
+  narrated companion notebook covering the same ground as the first-run and
+  core-concepts docs, including a live default-vs-ensemble-preset
+  comparison with an honest "the fancier option isn't always better"
+  result.
+- **`scripts/fetch_tabfm_weights.py`**: fixes a verified upstream packaging
+  bug in `tabfm==1.0.0` — its PyTorch auto-download path looks for
+  `pytorch_model.bin`, but the files published on Hugging Face
+  (`google/tabfm-1.0.0-pytorch`) are `model.safetensors`. This script
+  downloads the safetensors weights and re-saves them in the expected
+  format (verified with `strict=True` state-dict loading — a pure container
+  conversion, not a model port). Documented in full in
+  `docs/08-troubleshooting.md` and `HANDBOOK.md §14.3`.
+- New `safetensors` dependency (required by the fix above).
+
+### Changed
+- **`README.md`**: fully rewritten as a beginner-first entry point — clear
+  audience, learning path, quickstart with verified expected output,
+  repository structure, real results table, and a properly contextualized
+  references section (each source has a stated reason for inclusion).
+- **`HANDBOOK.md`**: repositioned as the operational/maintainer manual,
+  cross-linked to the new `docs/` learning path; corrected the exact weights
+  license name (**"TabFM Non-Commercial License v1.0"**, not just
+  "non-commercial"); clarified that `TABFM_*` environment variables are this
+  repository's own convention, not part of the `tabfm` package API.
+- **`notebooks/tabfm_quickstart_benchmark.ipynb`**: no longer hard-fails
+  when CUDA is unavailable — now uses this repo's `<12 GiB VRAM → CPU
+  fallback` convention like every other notebook.
+- **`problems/problem1_telecom_churn`**: added a header cell clarifying its
+  relationship to `notebooks/tabfm_telco_churn_production.ipynb` (same
+  workflow; this copy adds CI/E2E automation hooks) so learners know which
+  one to read first.
+
+### Fixed
+- Removed 9 committed `*.executed.ipynb` files that baked in the previous
+  maintainer's absolute local filesystem path and stale timestamps;
+  `artifacts/*.csv`/`*.json` remain as the path-free evidence of each run.
+  `*.executed.ipynb` is now gitignored.
+- Fixed a real, reproducible `ValueError` when scoring `TabFMClassifier`
+  predictions with strict scikit-learn metrics (object-dtype array
+  misclassified as an "unknown" target type) — documented and worked around
+  in every example.
+
+### Verification
+Commands executed:
+
+```bash
+./scripts/validate_repo_hygiene.sh
+UV_CACHE_DIR=/tmp/uv-cache uv run pytest
+UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_benchmark.py --help
+UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_strict_e2e.py --help
+UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/fetch_tabfm_weights.py --help
+```
+
+Observed status:
+- Hygiene checks passed.
+- `7 passed, 1 warning` for test suite.
+- All four `examples/` scripts executed successfully end to end with real
+  captured output (see `docs/03-first-run.md`, `docs/07-evaluation.md`, and
+  each script's own docstring).
+- All internal documentation cross-links (including heading anchors)
+  verified to resolve correctly.
+
 ## v1.0.3 - Release Publisher Hardening
 
 ### Highlights
