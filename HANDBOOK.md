@@ -221,19 +221,19 @@ Common variables found in notebooks and strict E2E runner:
 ## 11. Commands Used (Verified)
 ### 11.1 Health checks run during this documentation pass
 ```bash
+./scripts/validate_repo_hygiene.sh
 UV_CACHE_DIR=/tmp/uv-cache uv run pytest
 UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_benchmark.py --help
 UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_strict_e2e.py --help
 free -h
 ps -eo pid,ppid,pcpu,pmem,etime,cmd --sort=-pmem | head -n 15
-gh auth status
 ```
 
 ### 11.2 Notable observed outputs
+- `validate_repo_hygiene.sh`: passed (no oversized tracked files, no tracked raw-data/model paths).
 - Tests: `7 passed, 1 warning`.
 - `run_benchmark.py --help`: confirms device/seed/estimator/output options.
 - `run_strict_e2e.py --help`: confirms project selection options (`--start-from`, `--only`).
-- `gh auth status`: active token is invalid, re-authentication required.
 
 ---
 
@@ -296,13 +296,15 @@ Symptom from earlier strict E2E logs:
 Fix:
 - set `TABFM_CHECKPOINT_PATH` to a valid checkpoint, or allow notebook checkpoint download path to run.
 
-### 14.4 GitHub publish auth failure
-Symptom:
-- `gh auth status` reports invalid token.
-
-Fix:
+### 14.4 GitHub CLI authentication setup
+To authenticate on a new environment:
 ```bash
 gh auth login -h github.com
+```
+
+To verify current status:
+```bash
+gh auth status
 ```
 
 ---
@@ -324,6 +326,28 @@ gh auth login -h github.com
 - This repo is best used as a **research/benchmark workflow** and artifact generator.
 - For production deployment, package specific notebook logic into versioned pipeline modules and add CI checks for data contracts.
 - Keep checkpoints and raw datasets in object storage or artifact registry; avoid storing large binary assets in Git.
+
+### 16.1 CI enforcement
+- Workflow file: `.github/workflows/ci.yml`
+- Triggers: pull requests to `main`, pushes to `main`.
+- Required checks:
+  - `./scripts/validate_repo_hygiene.sh`
+  - `uv run pytest`
+  - `uv run python scripts/run_benchmark.py --help`
+  - `uv run python scripts/run_strict_e2e.py --help`
+
+### 16.2 Release contract (tag-driven)
+- Workflow file: `.github/workflows/release.yml`
+- Trigger: semantic version tags (`v*.*.*`)
+- Behavior:
+  - reruns deterministic validation checks,
+  - creates GitHub release with `RELEASE_NOTES.md`,
+  - uploads `HANDBOOK.pdf` as a release asset.
+- Maintainer command pattern:
+  ```bash
+  git tag -a v1.0.1 -m "v1.0.1"
+  git push origin v1.0.1
+  ```
 
 ---
 

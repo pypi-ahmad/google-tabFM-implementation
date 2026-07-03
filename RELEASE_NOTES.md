@@ -1,5 +1,36 @@
 # Release Notes
 
+## v1.0.1 - CI and Release Automation Hardening
+
+### Highlights
+- Added CI workflow: `.github/workflows/ci.yml`
+  - Runs on pull requests to `main` and pushes to `main`.
+  - Enforces repository hygiene plus deterministic validation checks.
+- Added tag-driven release workflow: `.github/workflows/release.yml`
+  - Runs on semantic tags (`v*.*.*`).
+  - Revalidates checks, publishes GitHub release using `RELEASE_NOTES.md`, and uploads `HANDBOOK.pdf`.
+- Added repository hygiene script: `scripts/validate_repo_hygiene.sh`
+  - Fails if tracked files exceed 90 MiB.
+  - Fails if tracked files exist under disallowed raw-data/model paths.
+- Updated README and handbook with CI/release operating contract.
+
+### Verification
+Commands executed:
+
+```bash
+./scripts/validate_repo_hygiene.sh
+UV_CACHE_DIR=/tmp/uv-cache uv run pytest
+UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_benchmark.py --help
+UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_strict_e2e.py --help
+```
+
+Observed status:
+- Hygiene checks passed.
+- `7 passed, 1 warning` for test suite.
+
+### Notes
+- Release publication is now tag-driven; maintainers should update this file before pushing the next `vX.Y.Z` tag.
+
 ## v1.0.0 - Public Documentation and Release Baseline
 
 ### Highlights

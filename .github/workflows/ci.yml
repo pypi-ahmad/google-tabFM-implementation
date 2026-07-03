@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+    env:
+      UV_CACHE_DIR: /tmp/uv-cache
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies (frozen lockfile)
+        run: uv sync --extra dev --frozen
+
+      - name: Run repository hygiene checks
+        run: ./scripts/validate_repo_hygiene.sh
+
+      - name: Run test suite
+        run: uv run pytest
+
+      - name: Validate benchmark CLI contract
+        run: uv run python scripts/run_benchmark.py --help
+
+      - name: Validate strict E2E CLI contract
+        run: uv run python scripts/run_strict_e2e.py --help

@@ -105,6 +105,33 @@ UV_CACHE_DIR=/tmp/uv-cache uv run jupyter nbconvert \
   --output problem1_telecom_churn_tabfm.executed.ipynb
 ```
 
+## CI and Release Automation
+### CI gates
+- GitHub Actions workflow: `.github/workflows/ci.yml`
+- Triggers:
+  - pull requests targeting `main`
+  - pushes to `main`
+- Enforced checks:
+  - repository hygiene (`./scripts/validate_repo_hygiene.sh`)
+  - `UV_CACHE_DIR=/tmp/uv-cache uv run pytest`
+  - benchmark CLI contract (`run_benchmark.py --help`)
+  - strict E2E CLI contract (`run_strict_e2e.py --help`)
+
+### Release flow (tag-driven)
+- GitHub Actions workflow: `.github/workflows/release.yml`
+- Trigger: pushing semantic tags matching `v*.*.*`
+- Release behavior:
+  - reruns deterministic validation checks
+  - creates/updates GitHub release for the tag
+  - uses `RELEASE_NOTES.md` as release body
+  - attaches `HANDBOOK.pdf` to release assets
+
+### Maintainer release steps
+```bash
+git tag -a v1.0.1 -m "v1.0.1"
+git push origin v1.0.1
+```
+
 ## Experiments / Workflow
 - **Problems covered**: 8 (`problem1` to `problem8`), including churn, fraud, regression/pricing, loan default, and attrition.
 - **Model families**: TabFM variants + XGBoost baseline.
@@ -140,7 +167,7 @@ Additional policy artifacts are available per problem (threshold summaries, top-
 - **Runtime variability**: strict E2E duration varies significantly by notebook/problem and environment.
 
 ## Future Improvements
-- Add CI for smoke notebook execution and artifact schema checks.
+- Extend CI with optional notebook smoke checks under strict memory/time caps.
 - Add dataset fetch scripts with checksums and resumable downloads.
 - Add automated model card/report generation from artifact bundles.
 - Introduce optional Git LFS profile for teams that need data+weights versioning.
