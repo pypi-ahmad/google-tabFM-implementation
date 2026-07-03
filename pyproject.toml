@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "google-tabfm-implementation"
-version = "2.1.0"
+version = "2.1.1"
 description = "Zero-to-mastery learning path and production-style benchmark suite for Google's TabFM"
 readme = "README.md"
 requires-python = ">=3.11"

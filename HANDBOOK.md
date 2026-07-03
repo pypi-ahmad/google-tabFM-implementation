@@ -382,6 +382,15 @@ gh auth status
   git push origin v1.0.1
   ```
 
+### 16.3 Documentation site (MkDocs + GitHub Pages)
+- Workflow file: `.github/workflows/docs.yml`
+- Behavior:
+  - always builds the MkDocs site (`uv run mkdocs build`) and uploads it as a
+    workflow artifact (`mkdocs-site`),
+  - deploys to GitHub Pages only if Pages is enabled in the repo settings.
+- One-time repo setting (required):
+  - GitHub repo `Settings -> Pages -> Build and deployment -> Source: GitHub Actions`
+
 ---
 
 ## 17. Best Practices and Lessons Learned

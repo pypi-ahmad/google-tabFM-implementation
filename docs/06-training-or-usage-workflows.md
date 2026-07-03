@@ -68,7 +68,7 @@ reproducibility and CI automation:
 | Env var | Read by | Purpose |
 |---|---|---|
 | `TABFM_DEVICE` | Notebooks in `problems/` | Requested device (`auto`/`cpu`/`cuda`), before this repo's own low-VRAM fallback logic runs |
-| `TABFM_CHECKPOINT_PATH` | Notebooks, `scripts/run_strict_e2e.py`, `examples/` | Overrides automatic Hugging Face download with a local checkpoint directory — see [08-troubleshooting.md](08-troubleshooting.md) |
+| `TABFM_CHECKPOINT_PATH` | Notebooks, `scripts/run_strict_e2e.py`, `scripts/run_benchmark.py`, `examples/` | Overrides automatic Hugging Face download with a local checkpoint directory — see [08-troubleshooting.md](08-troubleshooting.md) |
 | `TABFM_CONTEXT_MAX_ROWS` | Notebooks, `examples/02_minimal_regression.py` | Caps training-context rows to control memory |
 | `TABFM_EVAL_MAX_ROWS` | Notebooks, `examples/02_minimal_regression.py` | Caps rows scored per prediction call |
 | `TABFM_FAST_MODE` | `problems/*.ipynb`, `scripts/run_strict_e2e.py` | Switches to a smaller-estimator "fast" profile for quick CI runs |
@@ -89,6 +89,7 @@ UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_benchmark.py \
   --device cpu \
   --seed 42 \
   --n-estimators 32 \
+  --checkpoint-path "${TABFM_CHECKPOINT_PATH:-}" \
   --output artifacts/tabfm_benchmark_results.parquet \
   --summary-output artifacts/tabfm_benchmark_summary.csv
 ```

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from functools import lru_cache
+import os
 from pathlib import Path
 import time
 
@@ -26,6 +27,7 @@ from tabfm_benchmark.datasets import default_dataset_specs
 from tabfm_benchmark.types import DatasetSpec, TaskType
 
 MAX_SUPPORTED_CLASSES = 10
+MIN_CUDA_VRAM_GB_FOR_AUTO = 12.0
 
 RESULT_SCHEMA: dict[str, pl.DataType] = {
     "dataset": pl.Utf8,
@@ -72,6 +74,8 @@ def compute_regression_metrics(
 
 
 def _validate_device(device: str) -> None:
+    if device == "auto":
+        return
     if device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError(
             "CUDA device requested but torch.cuda.is_available() is False."
@@ -113,9 +117,42 @@ def _split_dataset(
 
 
 @lru_cache(maxsize=4)
-def _load_model_for_task(task_type: TaskType, device: str):
+def _load_model_for_task(task_type: TaskType, device: str, checkpoint_path: str):
     model_type = "classification" if task_type == "classification" else "regression"
-    return tabfm_v1_0_0.load(model_type=model_type, device=device)
+    checkpoint = checkpoint_path or None
+    try:
+        return tabfm_v1_0_0.load(model_type=model_type, device=device, checkpoint_path=checkpoint)
+    except FileNotFoundError as exc:
+        hint = (
+            "TabFM checkpoint not found in the format the PyTorch loader expects.\n\n"
+            "Common cause: `tabfm==1.0.0` downloads `model.safetensors` from Hugging Face, "
+            "but its PyTorch loader looks for `pytorch_model.bin`.\n\n"
+            "Fix (one-time):\n"
+            "  UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/fetch_tabfm_weights.py --task both\n"
+            "  export TABFM_CHECKPOINT_PATH=data/models/google-tabfm-1.0.0-pytorch\n\n"
+            "Then re-run the benchmark, or pass --checkpoint-path explicitly.\n"
+            "Full writeup: docs/08-troubleshooting.md#missing-checkpoint-file-on-a-fresh-install"
+        )
+        raise FileNotFoundError(hint) from exc
+
+
+def _resolve_device(device: str) -> str:
+    """Resolves repo-level `auto` semantics into an actual torch device string."""
+    if device != "auto":
+        return device
+    if not torch.cuda.is_available():
+        return "cpu"
+
+    gpu_mem_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+    if gpu_mem_gb >= MIN_CUDA_VRAM_GB_FOR_AUTO:
+        return "cuda"
+
+    logger.warning(
+        "Detected GPU with {:.1f} GiB VRAM (<{:.0f} GiB) — using CPU for a stable run.",
+        gpu_mem_gb,
+        MIN_CUDA_VRAM_GB_FOR_AUTO,
+    )
+    return "cpu"
 
 
 def _build_estimator(
@@ -182,6 +219,7 @@ def _run_single_dataset(
     spec: DatasetSpec,
     seed: int,
     device: str,
+    checkpoint_path: str,
     n_estimators: int,
     use_ensemble_preset: bool,
 ) -> dict[str, object]:
@@ -219,7 +257,8 @@ def _run_single_dataset(
                 )
                 return record
 
-        model = _load_model_for_task(spec.task_type, device)
+        resolved_device = _resolve_device(device)
+        model = _load_model_for_task(spec.task_type, resolved_device, checkpoint_path)
         estimator = _build_estimator(
             task_type=spec.task_type,
             model=model,
@@ -251,6 +290,13 @@ def _run_single_dataset(
 
         record["status"] = "ok"
         return record
+    except FileNotFoundError as exc:
+        # Make the common "fresh install can't find pytorch_model.bin" failure
+        # actionable without forcing users to read stack traces.
+        record["status"] = "error"
+        record["skip_reason"] = str(exc)
+        logger.error("{}", exc)
+        return record
     except Exception as exc:  # pragma: no cover - exercised in integration paths
         record["status"] = "error"
         record["skip_reason"] = str(exc)
@@ -261,6 +307,7 @@ def _run_with_specs(
     dataset_specs: list[DatasetSpec],
     device: str,
     seed: int,
+    checkpoint_path: str,
     n_estimators: int,
     use_ensemble_preset: bool,
 ) -> pl.DataFrame:
@@ -278,6 +325,7 @@ def _run_with_specs(
                 spec=spec,
                 seed=seed,
                 device=device,
+                checkpoint_path=checkpoint_path,
                 n_estimators=n_estimators,
                 use_ensemble_preset=use_ensemble_preset,
             )
@@ -286,8 +334,9 @@ def _run_with_specs(
 
 
 def run_benchmark(
-    device: str = "cuda",
+    device: str = "auto",
     seed: int = 42,
+    checkpoint_path: str | None = None,
     n_estimators: int = 32,
     use_ensemble_preset: bool = True,
 ) -> pl.DataFrame:
@@ -296,6 +345,7 @@ def run_benchmark(
         dataset_specs=default_dataset_specs(),
         device=device,
         seed=seed,
+        checkpoint_path=checkpoint_path or "",
         n_estimators=n_estimators,
         use_ensemble_preset=use_ensemble_preset,
     )
@@ -339,8 +389,23 @@ def render_summary(df: pl.DataFrame) -> pl.DataFrame:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run TabFM multi-dataset benchmark.")
-    parser.add_argument("--device", default="cuda", help="Torch device (default: cuda)")
+    parser.add_argument(
+        "--device",
+        default="auto",
+        help=(
+            "Torch device: auto/cpu/cuda (default: auto). "
+            "auto uses CUDA only if available and >=12 GiB VRAM, else CPU."
+        ),
+    )
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument(
+        "--checkpoint-path",
+        default="",
+        help=(
+            "Local directory containing TabFM checkpoints, to avoid/override the "
+            "automatic Hugging Face download. If omitted, uses env TABFM_CHECKPOINT_PATH."
+        ),
+    )
     parser.add_argument(
         "--n-estimators",
         type=int,
@@ -364,9 +429,11 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    checkpoint_path = args.checkpoint_path or os.environ.get("TABFM_CHECKPOINT_PATH", "")
     df = run_benchmark(
         device=args.device,
         seed=args.seed,
+        checkpoint_path=checkpoint_path or None,
         n_estimators=args.n_estimators,
         use_ensemble_preset=not args.no_ensemble_preset,
     )
@@ -377,7 +444,13 @@ def main() -> None:
     logger.info("Wrote benchmark results to {}", args.output)
     logger.info("Wrote benchmark summary to {}", args.summary_output)
 
+    if df.filter(pl.col("status") == "error").height > 0:
+        raise SystemExit(
+            "Benchmark completed with errors. See artifacts output files; "
+            "if the error was about missing `pytorch_model.bin`, follow the "
+            "converter instructions printed above or in docs/08-troubleshooting.md."
+        )
+
 
 if __name__ == "__main__":
     main()
-

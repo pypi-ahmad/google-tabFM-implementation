@@ -42,7 +42,7 @@ def test_run_with_specs_and_save_results(monkeypatch, tmp_path) -> None:
         DatasetSpec(name="reg_small", task_type="regression", loader=reg_loader),
     ]
 
-    def _fake_load_model(task_type, device):
+    def _fake_load_model(task_type, device, checkpoint_path):
         return object()
 
     def _fake_build_estimator(task_type, model, n_estimators, use_ensemble_preset):
@@ -61,6 +61,7 @@ def test_run_with_specs_and_save_results(monkeypatch, tmp_path) -> None:
         dataset_specs=specs,
         device="cpu",
         seed=42,
+        checkpoint_path="",
         n_estimators=4,
         use_ensemble_preset=True,
     )
@@ -73,4 +74,3 @@ def test_run_with_specs_and_save_results(monkeypatch, tmp_path) -> None:
     save_results(df, csv_path)
     assert parquet_path.exists()
     assert csv_path.exists()
-

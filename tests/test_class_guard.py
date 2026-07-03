@@ -18,10 +18,10 @@ def test_class_cardinality_guard_skips_dataset() -> None:
         dataset_specs=specs,
         device="cpu",
         seed=7,
+        checkpoint_path="",
         n_estimators=32,
         use_ensemble_preset=True,
     )
     row = df.row(0, named=True)
     assert row["status"] == "skipped"
     assert "exceeding max supported 10 classes" in (row["skip_reason"] or "")
-

@@ -1,5 +1,23 @@
 # Release Notes
 
+## v2.1.1 - CI-Safe Docs Deploy + Benchmark Checkpoint Override
+
+This patch improves reliability in two places that commonly break for new
+users and for repos with default GitHub settings:
+
+### Fixed
+- **Docs workflow no longer fails when GitHub Pages is not enabled.**
+  `.github/workflows/docs.yml` now always builds the MkDocs site and uploads
+  it as a workflow artifact, and only attempts a Pages deploy if the repo has
+  Pages enabled in `Settings -> Pages`.
+- **Benchmark CLI now respects local checkpoints** via `--checkpoint-path` or
+  `TABFM_CHECKPOINT_PATH`, and prints an actionable fix when it hits the known
+  upstream `tabfm==1.0.0` PyTorch checkpoint filename mismatch.
+
+### Changed
+- `scripts/run_benchmark.py` defaults to `--device auto` (CUDA only if
+  available and >=12 GiB VRAM; otherwise CPU) for beginner-safe behavior.
+
 ## v2.1.0 - Reliability + Docs Site + Publishability
 
 This release tightens the repo into a more trustworthy learning resource:
