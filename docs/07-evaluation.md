@@ -1,6 +1,6 @@
 # 07 — Evaluation
 
-> **You are here:** [Learning path](../README.md#learning-path) → **07 Evaluation**
+> **You are here:** [Learning path](index.md#learning-path) → **07 Evaluation**
 > **Previous:** [06 — Usage Workflows](06-training-or-usage-workflows.md) · **Next:** [08 — Troubleshooting](08-troubleshooting.md)
 
 A prediction without an honest evaluation is a guess with extra steps. This
@@ -27,7 +27,7 @@ A TabFM accuracy of 0.94 means nothing on its own — you need to know what a
 simple, well-understood model achieves on the *same* split. Every workflow
 in this repo trains an **XGBoost baseline** alongside TabFM for exactly this
 reason (see
-[`problems/problem1_telecom_churn`](../problems/problem1_telecom_churn) for
+[`problems/problem1_telecom_churn`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems/problem1_telecom_churn) for
 a full worked example). The pattern:
 
 ```python
@@ -45,9 +45,10 @@ production — don't assume either model universally wins (see
 
 ## 3. This repo's own results
 
-The table below is reproduced from persisted artifacts in
-[`problems/*/artifacts/`](../problems/) — real numbers from real runs in
-this repository, not illustrative figures:
+The table below is backed by a small, tracked CSV at
+[`reports/case_studies_summary.csv`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/reports/case_studies_summary.csv).
+The full `problems/` notebooks generate their own local artifacts when you run
+them — this repo does not commit raw datasets or heavyweight run outputs.
 
 | Problem | Champion | Test Metrics |
 |---|---|---|
@@ -84,27 +85,21 @@ any number:
    of the 38) and **log-loss for multiclass** datasets (the remaining 8) —
    they aren't directly comparable to each other.
 
-With those caveats stated, here is what we independently computed by
-downloading and parsing Google's own published per-fold result files
-(`results/*.parquet` in the official repo — verified 30 binary datasets,
-matching the documented dataset count):
-
-| Model | Macro-averaged ROC-AUC across 30 TabArena binary-classification datasets |
-|---|---|
-| TabFM (default) | **0.859** |
-| TabFM (ensemble preset) | **0.860** |
-
 For the full picture — including head-to-head Elo rankings against
 XGBoost, LightGBM, CatBoost, and AutoML systems — see the live
 [TabArena leaderboard](https://huggingface.co/spaces/TabArena/leaderboard)
 directly rather than relying on any single number reproduced here; it is
 an actively maintained external resource, not a snapshot we control.
 
+If you want to inspect Google's published TabFM-only results yourself, start at
+the upstream `results/` folder and read the `.parquet` files there:
+https://github.com/google-research/tabfm/tree/main/results
+
 ## 5. Beyond raw metrics: decision policies
 
 Raw accuracy/ROC-AUC rarely matches a business decision directly — "should
 we call this customer" depends on the cost of a false alarm vs. a missed
-churn. Every case study in [`problems/`](../problems/) builds a **threshold
+churn. Every case study in [`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems) builds a **threshold
 policy** or **top-k campaign** layer on top of raw model scores (e.g., "flag
 the riskiest 10% of customers"), using cost assumptions the notebooks label
 explicitly as illustrative. Treat those specific dollar figures as

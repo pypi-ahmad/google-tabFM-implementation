@@ -8,7 +8,7 @@ explanations live in [`docs/`](../docs/); this file is just a map.
 |---|---|---|---|
 | [`01_minimal_classification.py`](01_minimal_classification.py) | Minimal | Smallest possible TabFM classification call | [docs/03-first-run.md](../docs/03-first-run.md) |
 | [`02_minimal_regression.py`](02_minimal_regression.py) | Minimal | Same, for a numeric target | [docs/03-first-run.md](../docs/03-first-run.md) |
-| [`03_default_vs_ensemble.py`](03_default_vs_ensemble.py) | Beginner | Default preset vs. ensemble preset, same dataset, accuracy + timing | [docs/04-core-concepts.md §5](../docs/04-core-concepts.md#5-the-ensemble-preset--what-it-actually-turns-on) |
+| [`03_default_vs_ensemble.py`](03_default_vs_ensemble.py) | Beginner | Default preset vs. ensemble preset, same dataset, accuracy + timing | [docs/04-core-concepts.md §5](../docs/04-core-concepts.md#5-the-ensemble-preset-what-it-actually-turns-on) |
 | [`04_churn_baseline_comparison.py`](04_churn_baseline_comparison.py) | Practical (real dataset) | TabFM vs. XGBoost baseline on real, downloaded churn data | [docs/07-evaluation.md](../docs/07-evaluation.md) |
 
 ## Running any example

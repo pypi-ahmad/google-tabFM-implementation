@@ -1,6 +1,6 @@
 # 05 — Working with Data
 
-> **You are here:** [Learning path](../README.md#learning-path) → **05 Working with Data**
+> **You are here:** [Learning path](index.md#learning-path) → **05 Working with Data**
 > **Previous:** [04 — Core Concepts](04-core-concepts.md) · **Next:** [06 — Usage Workflows](06-training-or-usage-workflows.md)
 
 This page covers what TabFM expects as input, its documented hard limits,
@@ -34,10 +34,10 @@ Both `TabFMClassifier.fit(X, y)` and `TabFMRegressor.fit(X, y)` expect:
 | **Fine-tuning** | Not supported / not an intended use | Zero-shot/in-context only — see [04-core-concepts.md](04-core-concepts.md). |
 
 This repo enforces the class-count limit explicitly in
-[`src/tabfm_benchmark/benchmark.py`](../src/tabfm_benchmark/benchmark.py)
+[`src/tabfm_benchmark/benchmark.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/src/tabfm_benchmark/benchmark.py)
 (`MAX_SUPPORTED_CLASSES = 10`), skipping any dataset that exceeds it rather
 than letting it fail deep inside the model — see
-[`tests/test_class_guard.py`](../tests/test_class_guard.py) for the test
+[`tests/test_class_guard.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/tests/test_class_guard.py) for the test
 that pins this behavior.
 
 ## 3. What's *not* documented — and our recommendation
@@ -59,7 +59,7 @@ any other model that expects clean, complete input:
 - Remove obvious leakage columns (anything that encodes the target directly,
   e.g., a `days_until_cancellation` column when predicting churn).
 
-You'll see this pattern in every notebook under [`problems/`](../problems/):
+You'll see this pattern in every notebook under [`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems):
 a dedicated cleaning step runs before any TabFM call.
 
 ## 4. Leakage-safe splitting
@@ -79,7 +79,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 ```
 
 This is the exact pattern used in
-[`src/tabfm_benchmark/benchmark.py`](../src/tabfm_benchmark/benchmark.py)
+[`src/tabfm_benchmark/benchmark.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/src/tabfm_benchmark/benchmark.py)
 (`_split_dataset`) and every example in this repo.
 
 ## 5. Practical dataset-prep checklist

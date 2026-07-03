@@ -56,9 +56,16 @@ cd google-tabFM-implementation
 
 uv venv --python 3.11
 source .venv/bin/activate
-uv sync --extra dev
+export UV_CACHE_DIR=/tmp/uv-cache
+uv sync --extra dev --frozen
 
-UV_CACHE_DIR=/tmp/uv-cache uv run python examples/01_minimal_classification.py
+# One-time fix for a known upstream mismatch in `tabfm==1.0.0` (PyTorch):
+# the loader expects `pytorch_model.bin` but the HF repo ships `model.safetensors`.
+# This downloads and converts the weights into the expected format.
+uv run python scripts/fetch_tabfm_weights.py --task classification
+export TABFM_CHECKPOINT_PATH=data/models/google-tabfm-1.0.0-pytorch
+
+uv run python examples/01_minimal_classification.py
 ```
 
 **Expected output** (verified in this repo's own reference environment — a
@@ -79,7 +86,7 @@ from a quickstart snippet.
 > **Before your first real run:** TabFM's pretrained weights are a
 > multi-gigabyte download from Hugging Face, fetched automatically the
 > first time you load the model — see
-> [docs/02-installation.md §3](docs/02-installation.md#3-disk-and-network-requirements--read-this-before-your-first-run)
+> [docs/02-installation.md §3](docs/02-installation.md#3-disk-and-network-requirements-read-this-before-your-first-run)
 > for exact sizes and how to plan around it.
 
 ## Learning path
@@ -100,14 +107,16 @@ its own jargon, and links forward/backward.
 | 08 | [Troubleshooting](docs/08-troubleshooting.md) | Every failure mode this repo has actually reproduced, with verified fixes |
 | 09 | [FAQ](docs/09-faq.md) | Licensing, fine-tuning, paper status, and the other questions everyone asks |
 | 10 | [Next Steps](docs/10-next-steps.md) | Where to go once you finish this path |
+| 11 | [Datasets & Licenses](docs/11-datasets-and-licenses.md) | Dataset sources/terms + what this repo does and does not redistribute |
 
 ## Repository structure
 
 ```text
-docs/          — the numbered learning path above (00-overview.md … 10-next-steps.md)
+docs/          — the numbered learning path above (00-overview.md … 11-datasets-and-licenses.md)
 examples/      — runnable scripts, minimal → practical (start here for code)
 notebooks/     — interactive walkthroughs (00_beginner_walkthrough.ipynb + a benchmark notebook)
 problems/      — 8 advanced, production-style case studies (churn, fraud, pricing, attrition, loan risk)
+reports/       — small, tracked CSV summaries backing README/docs tables
 src/tabfm_benchmark/ — a small, reusable Python package for multi-dataset TabFM benchmarking
 scripts/       — CLI entry points + CI/ops tooling (benchmark runner, weight-format fixer, E2E runner)
 tests/         — unit/integration tests for src/tabfm_benchmark
@@ -143,9 +152,11 @@ preds = clf.predict(X_test)
 
 ## This repo's own results (real runs, not illustrative)
 
-Test-split champion metrics from persisted artifacts in
-[`problems/*/artifacts/`](problems/) — TabFM vs. an XGBoost baseline across
-eight real business problems:
+Reference test-split champion metrics (TabFM vs. an XGBoost baseline) across
+eight real business problems. The table below is backed by a small, tracked
+CSV at [`reports/case_studies_summary.csv`](reports/case_studies_summary.csv).
+The full `problems/` notebooks generate their own local artifacts when you run
+them.
 
 | Problem | Champion | Test Metrics |
 |---|---|---|

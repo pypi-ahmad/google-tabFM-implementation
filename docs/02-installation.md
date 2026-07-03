@@ -1,6 +1,6 @@
 # 02 — Installation
 
-> **You are here:** [Learning path](../README.md#learning-path) → **02 Installation**
+> **You are here:** [Learning path](index.md#learning-path) → **02 Installation**
 > **Previous:** [01 — Prerequisites](01-prerequisites.md) · **Next:** [03 — First Run](03-first-run.md)
 
 ## 1. Clone and install
@@ -11,7 +11,8 @@ cd google-tabFM-implementation
 
 uv venv --python 3.11
 source .venv/bin/activate
-uv sync --extra dev
+export UV_CACHE_DIR=/tmp/uv-cache
+uv sync --extra dev --frozen
 ```
 
 What each command does:
@@ -21,16 +22,16 @@ What each command does:
   anything else on your machine.
 - `source .venv/bin/activate` — makes that environment the active `python`
   for your current shell.
-- `uv sync --extra dev` — installs every dependency pinned in
-  [`uv.lock`](../uv.lock), including the `dev` extra (`pytest`, `nbconvert`,
+- `uv sync --extra dev --frozen` — installs every dependency pinned in
+  [`uv.lock`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/uv.lock), including the `dev` extra (`pytest`, `nbconvert`,
   `ipykernel`) needed to run tests and notebooks. This is also the step that
   installs `tabfm[pytorch]` itself — TabFM is a regular PyPI package, not a
   separate SDK you configure elsewhere.
 
 ### Restricted / sandboxed environments
 
-If `uv` fails with a read-only cache error, point its cache somewhere
-writable first:
+If `uv` fails with a read-only cache error and you didn't set `UV_CACHE_DIR`
+already, point its cache somewhere writable first:
 
 ```bash
 export UV_CACHE_DIR=/tmp/uv-cache
@@ -43,16 +44,16 @@ for the full symptom/fix writeup.
 ## 2. Verify the install
 
 ```bash
-UV_CACHE_DIR=/tmp/uv-cache uv run pytest
+uv run pytest
 ```
 
 **Expected output:** all tests pass (this repo's package test suite covers
 dataset loaders, metric computation, the result schema, and the class-count
-guard — see [`tests/`](../tests/)). If you see failures here, stop and work
+guard — see [`tests/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/tests)). If you see failures here, stop and work
 through [08-troubleshooting.md](08-troubleshooting.md) before moving on —
 everything downstream assumes a clean install.
 
-## 3. Disk and network requirements — read this before your first run
+## 3. Disk and network requirements (read this before your first run)
 
 TabFM ships **code** via PyPI, but the **pretrained weights** are a separate
 download from Hugging Face, fetched automatically the first time you call
@@ -82,11 +83,30 @@ Practical implications:
   exact snippet.
 - **CI and automated environments** should pre-populate the cache once and
   reuse it, rather than downloading fresh on every run — see
-  [`scripts/run_strict_e2e.py`](../scripts/run_strict_e2e.py) for how this
+  [`scripts/run_strict_e2e.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/scripts/run_strict_e2e.py) for how this
   repo's own automation handles a `TABFM_CHECKPOINT_PATH` override (a
   convention specific to this repo, not part of the `tabfm` package itself —
   more on that distinction in
   [06-training-or-usage-workflows.md](06-training-or-usage-workflows.md)).
+
+## 3.5 One-time weight conversion (recommended)
+
+As of `tabfm==1.0.0`, the PyTorch loader looks for a file named
+`pytorch_model.bin`, but the released Hugging Face repo ships weights as
+`model.safetensors`. The result is a confusing first-run failure after a large
+download.
+
+This repository includes a one-command converter that downloads the official
+weights and re-saves them as `pytorch_model.bin` in a local directory layout
+the loader expects:
+
+```bash
+uv run python scripts/fetch_tabfm_weights.py --task classification
+export TABFM_CHECKPOINT_PATH=data/models/google-tabfm-1.0.0-pytorch
+```
+
+All example scripts respect `TABFM_CHECKPOINT_PATH` automatically. Full details
+and the underlying upstream root cause: [08-troubleshooting.md](08-troubleshooting.md#missing-checkpoint-file-on-a-fresh-install).
 
 ## 4. GPU vs. CPU
 
@@ -95,7 +115,7 @@ TabFM runs on CPU or GPU. Nothing in the install step is GPU-specific — the
 an NVIDIA GPU and want to use it, make sure `torch.cuda.is_available()`
 returns `True` in your environment (this depends on your system's CUDA
 driver, which is outside this repo's scope to install). Every example script
-in [`examples/`](../examples/) auto-detects the device and falls back to CPU
+in [`examples/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/examples) auto-detects the device and falls back to CPU
 if no GPU is present — you do not need to configure anything to get started.
 
 ## 5. What "installed correctly" looks like

@@ -1,6 +1,6 @@
 # 04 — Core Concepts
 
-> **You are here:** [Learning path](../README.md#learning-path) → **04 Core Concepts**
+> **You are here:** [Learning path](index.md#learning-path) → **04 Core Concepts**
 > **Previous:** [03 — First Run](03-first-run.md) · **Next:** [05 — Working with Data](05-working-with-data.md)
 
 You ran your first prediction in [03-first-run.md](03-first-run.md). This
@@ -104,7 +104,7 @@ not fully characterised."** Treat every result on your own data as something
 to measure, not assume — this is the entire point of
 [07-evaluation.md](07-evaluation.md).
 
-## 5. The ensemble preset — what it actually turns on
+## 5. The ensemble preset (what it actually turns on)
 
 Both `TabFMClassifier` and `TabFMRegressor` have a `.ensemble(model=...)`
 constructor alongside the plain `TabFMClassifier(model=...)` constructor.
@@ -157,14 +157,14 @@ Every term used in this repo's notebooks and docs, one place:
 | **Zero-shot** | Producing a usable prediction with no training steps on your specific data ([§2](#2-zero-shot)). |
 | **Context** | The training rows shown to TabFM at prediction time. |
 | **Context cap** | This repo's own convention (`TABFM_CONTEXT_MAX_ROWS`) for limiting how many context rows are used, to control memory — not a `tabfm` library setting. |
-| **Ensemble preset** | The `.ensemble(model=...)` constructor preset described in [§5](#5-the-ensemble-preset--what-it-actually-turns-on). |
+| **Ensemble preset** | The `.ensemble(model=...)` constructor preset described in [§5](#5-the-ensemble-preset-what-it-actually-turns-on). |
 | **Feature cross** | An engineered feature made by combining two existing features (e.g., multiplying them), used by the ensemble preset. |
 | **SVD feature** | An engineered feature derived from a low-rank (SVD) projection of the input data, used by the ensemble preset. |
 | **NNLS (non-negative least squares) blending** | Learning non-negative combination weights for ensemble members instead of averaging them equally. |
 | **Calibration / Platt scaling** | Adjusting predicted probabilities so they better reflect real-world frequencies, without changing the predicted class. |
 | **Champion model** | This repo's term (used in `problems/`) for whichever model variant scored best on the validation set for a given problem. |
 | **PR-AUC** | Area under the precision-recall curve — a classification metric that is more informative than accuracy when the positive class is rare (e.g., fraud, churn). Defined fully in [07-evaluation.md](07-evaluation.md). |
-| **Threshold policy / top-k campaign** | Decision rules built on top of a model's predicted probabilities (e.g., "flag the top 10% highest-risk customers") — covered in [07-evaluation.md](07-evaluation.md) and the [`problems/`](../problems/) case studies. |
+| **Threshold policy / top-k campaign** | Decision rules built on top of a model's predicted probabilities (e.g., "flag the top 10% highest-risk customers") — covered in [07-evaluation.md](07-evaluation.md) and the [`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems) case studies. |
 
 ## 7. TabFM vs. a conventional tabular model (XGBoost)
 
@@ -178,7 +178,7 @@ Every term used in this repo's notebooks and docs, one place:
 | Best accuracy on a given dataset | Can win with enough tuning | Competitive out-of-the-box; not guaranteed to win — see [07-evaluation.md](07-evaluation.md) |
 
 This repo runs both side by side in every case study under
-[`problems/`](../problems/) so you can see the tradeoff on real data rather
+[`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems) so you can see the tradeoff on real data rather
 than take either side's marketing claim.
 
 ## References

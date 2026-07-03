@@ -1,6 +1,6 @@
 # 09 — FAQ
 
-> **You are here:** [Learning path](../README.md#learning-path) → **09 FAQ**
+> **You are here:** [Learning path](index.md#learning-path) → **09 FAQ**
 > **Previous:** [08 — Troubleshooting](08-troubleshooting.md) · **Next:** [10 — Next Steps](10-next-steps.md)
 
 ## Is TabFM an official Google product?

@@ -67,11 +67,20 @@ def main() -> None:
         y_test = y_test.loc[X_test.index]
 
     print(f"Loading TabFM regression weights (device={DEVICE}) ...")
-    model = tabfm_v1_0_0.load(
-        model_type="regression",
-        device=DEVICE,
-        checkpoint_path=CHECKPOINT_PATH,
-    )
+    try:
+        model = tabfm_v1_0_0.load(
+            model_type="regression",
+            device=DEVICE,
+            checkpoint_path=CHECKPOINT_PATH,
+        )
+    except FileNotFoundError as exc:
+        print("\nERROR: TabFM weights were downloaded but not found in the format the loader expects.")
+        print(f"Underlying error: {exc}\n")
+        print("Fix (one-time):")
+        print("  UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/fetch_tabfm_weights.py --task regression")
+        print("  export TABFM_CHECKPOINT_PATH=data/models/google-tabfm-1.0.0-pytorch")
+        print("\nThen rerun this example. Full writeup: docs/08-troubleshooting.md#missing-checkpoint-file-on-a-fresh-install")
+        raise
 
     # n_estimators=4 keeps this "minimal" example light on memory; the
     # default of 32 is more accurate but can exceed 8 GB of GPU memory at

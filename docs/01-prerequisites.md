@@ -1,6 +1,6 @@
 # 01 — Prerequisites
 
-> **You are here:** [Learning path](../README.md#learning-path) → **01 Prerequisites**
+> **You are here:** [Learning path](index.md#learning-path) → **01 Prerequisites**
 > **Previous:** [00 — Overview](00-overview.md) · **Next:** [02 — Installation](02-installation.md)
 
 This page tells you exactly what you need to know and have installed before
@@ -42,9 +42,9 @@ docs.
 | Requirement | Minimum | Notes |
 |---|---|---|
 | **OS** | Linux | macOS likely works but is untested here. Windows: use WSL2. |
-| **Python** | 3.11+ | Pinned in [`pyproject.toml`](../pyproject.toml). |
+| **Python** | 3.11+ | Pinned in [`pyproject.toml`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/pyproject.toml). |
 | **Package manager** | [`uv`](https://docs.astral.sh/uv/) | This repo's dependency lockfile (`uv.lock`) assumes `uv`; do not mix with `pip install` inside the same environment. |
-| **Disk space** | ~20 GB free | TabFM's pretrained weights are several gigabytes **per task** (classification and regression are downloaded separately) — see the callout in [02-installation.md](02-installation.md#3-disk-and-network-requirements--read-this-before-your-first-run). Budget generously. |
+| **Disk space** | ~20 GB free | TabFM's pretrained weights are several gigabytes **per task** (classification and regression are downloaded separately) — see the callout in [02-installation.md](02-installation.md#3-disk-and-network-requirements-read-this-before-your-first-run). Budget generously. |
 | **Network** | Required for first run only | The first time you load a TabFM model, weights are downloaded once from Hugging Face and cached locally. After that, everything runs offline. |
 | **GPU** | Optional but recommended | An NVIDIA GPU with ≥12 GiB VRAM runs comfortably; this repo's own reference environment used a laptop GPU with 7.6 GiB VRAM, which works but triggers automatic CPU-safe fallbacks in the heavier examples (explained in [08-troubleshooting.md](08-troubleshooting.md)). No GPU at all still works — inference is just slower. |
 
@@ -65,7 +65,7 @@ this repo's docs assume `uv`.
   learning — [04-core-concepts.md](04-core-concepts.md) builds this from
   scratch.
 - Kaggle/OpenML accounts — only one advanced case study
-  ([`problems/problem2_saas_subscription_churn`](../problems/problem2_saas_subscription_churn))
+  ([`problems/problem2_saas_subscription_churn`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems/problem2_saas_subscription_churn))
   needs a Kaggle dataset; every other example uses freely downloadable or
   built-in data.
 

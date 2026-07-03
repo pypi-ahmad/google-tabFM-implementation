@@ -1,6 +1,6 @@
 # 00 — What Is TabFM, and Why Should You Care?
 
-> **You are here:** [Learning path](../README.md#learning-path) → **00 Overview**
+> **You are here:** [Learning path](index.md#learning-path) → **00 Overview**
 > **Next:** [01 — Prerequisites](01-prerequisites.md)
 
 This page answers three questions in plain English before you write any code:
@@ -136,13 +136,13 @@ the docs in order the first time through:
 
 Alongside the docs:
 
-- **[`examples/`](../examples/)** — short, runnable scripts, ordered from
+- **[`examples/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/examples)** — short, runnable scripts, ordered from
   minimal to practical.
-- **[`notebooks/`](../notebooks/)** — narrated, interactive walkthroughs.
-- **[`problems/`](../problems/)** — eight full production-style case studies
+- **[`notebooks/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/notebooks)** — narrated, interactive walkthroughs.
+- **[`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems)** — eight full production-style case studies
   (churn, fraud, pricing, attrition, loan risk) once you've finished the
   learning path and want advanced, business-grade workflows.
-- **[`src/tabfm_benchmark/`](../src/tabfm_benchmark/)** — a small, reusable
+- **[`src/tabfm_benchmark/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/src/tabfm_benchmark)** — a small, reusable
   Python package for multi-dataset benchmarking.
 
 ## References

@@ -1,6 +1,6 @@
 # 08 — Troubleshooting
 
-> **You are here:** [Learning path](../README.md#learning-path) → **08 Troubleshooting**
+> **You are here:** [Learning path](index.md#learning-path) → **08 Troubleshooting**
 > **Previous:** [07 — Evaluation](07-evaluation.md) · **Next:** [09 — FAQ](09-faq.md)
 
 Symptom → cause → fix, ordered by how likely you are to hit each one.
@@ -100,7 +100,7 @@ preds = clf.predict(X_test).astype(y_train.to_numpy().dtype)
 ```
 
 This is already done in
-[`examples/01_minimal_classification.py`](../examples/01_minimal_classification.py).
+[`examples/01_minimal_classification.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/examples/01_minimal_classification.py).
 
 ## uv cache is read-only
 
@@ -160,13 +160,13 @@ command rather than deleting anything. If you suspect a corrupted partial
 file, clear just that repo's cache:
 
 ```bash
-python -c "from huggingface_hub import scan_cache_dir; print(scan_cache_dir())"
+UV_CACHE_DIR=/tmp/uv-cache uv run python -c "from huggingface_hub import scan_cache_dir; print(scan_cache_dir())"
 ```
 and use the reported command to selectively delete that revision.
 
 ## Network fetch fails for a demo dataset CSV
 
-Several notebooks under [`problems/`](../problems/) fetch small CSVs from
+Several notebooks under [`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems) fetch small CSVs from
 public GitHub mirrors at run time (e.g., the Telco churn dataset). If your
 network blocks these, the affected cell will raise after exhausting its
 listed mirrors. There is currently no bundled offline fallback for these
@@ -181,7 +181,7 @@ gh auth login -h github.com
 gh auth status   # verify
 ```
 Needed only if you're cutting a release — see
-[10-next-steps.md](10-next-steps.md) and [`RELEASE_NOTES.md`](../RELEASE_NOTES.md).
+[10-next-steps.md](10-next-steps.md) and [`RELEASE_NOTES.md`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/RELEASE_NOTES.md).
 
 ---
 **Next:** [09 — FAQ →](09-faq.md)

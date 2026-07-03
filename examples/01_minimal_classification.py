@@ -65,11 +65,23 @@ def main() -> None:
     # 3. Load TabFM's pre-trained classification weights. This is a frozen
     #    model — nothing here is trained on your data.
     print(f"Loading TabFM classification weights (device={DEVICE}) ...")
-    model = tabfm_v1_0_0.load(
-        model_type="classification",
-        device=DEVICE,
-        checkpoint_path=CHECKPOINT_PATH,
-    )
+    try:
+        model = tabfm_v1_0_0.load(
+            model_type="classification",
+            device=DEVICE,
+            checkpoint_path=CHECKPOINT_PATH,
+        )
+    except FileNotFoundError as exc:
+        # Common first-run failure: tabfm==1.0.0 downloads safetensors from HF but
+        # its PyTorch loader looks for `pytorch_model.bin`. This repo ships a
+        # one-command converter; see docs/08-troubleshooting.md.
+        print("\nERROR: TabFM weights were downloaded but not found in the format the loader expects.")
+        print(f"Underlying error: {exc}\n")
+        print("Fix (one-time):")
+        print("  UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/fetch_tabfm_weights.py --task classification")
+        print("  export TABFM_CHECKPOINT_PATH=data/models/google-tabfm-1.0.0-pytorch")
+        print("\nThen rerun this example. Full writeup: docs/08-troubleshooting.md#missing-checkpoint-file-on-a-fresh-install")
+        raise
 
     # 4. "Fit" here only prepares label/feature encoders and stores your
     #    training rows as context — there is no gradient descent step.

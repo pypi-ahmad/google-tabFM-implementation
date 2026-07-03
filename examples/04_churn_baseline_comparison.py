@@ -130,9 +130,18 @@ def main() -> None:
 
     # --- TabFM default preset ---
     print(f"Loading TabFM classification weights (device={DEVICE}) ...")
-    model = tabfm_v1_0_0.load(
-        model_type="classification", device=DEVICE, checkpoint_path=CHECKPOINT_PATH
-    )
+    try:
+        model = tabfm_v1_0_0.load(
+            model_type="classification", device=DEVICE, checkpoint_path=CHECKPOINT_PATH
+        )
+    except FileNotFoundError as exc:
+        print("\nERROR: TabFM weights were downloaded but not found in the format the loader expects.")
+        print(f"Underlying error: {exc}\n")
+        print("Fix (one-time):")
+        print("  UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/fetch_tabfm_weights.py --task classification")
+        print("  export TABFM_CHECKPOINT_PATH=data/models/google-tabfm-1.0.0-pytorch")
+        print("\nThen rerun this example. Full writeup: docs/08-troubleshooting.md#missing-checkpoint-file-on-a-fresh-install")
+        raise
     clf = TabFMClassifier(model=model, random_state=42)
     clf.fit(X_train, y_train.to_numpy())
     tabfm_proba = clf.predict_proba(X_test)[:, 1]

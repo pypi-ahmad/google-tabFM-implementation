@@ -1,10 +1,10 @@
 # 03 — First Run
 
-> **You are here:** [Learning path](../README.md#learning-path) → **03 First Run**
+> **You are here:** [Learning path](index.md#learning-path) → **03 First Run**
 > **Previous:** [02 — Installation](02-installation.md) · **Next:** [04 — Core Concepts](04-core-concepts.md)
 
 Time to make your first TabFM prediction. This page walks through
-[`examples/01_minimal_classification.py`](../examples/01_minimal_classification.py)
+[`examples/01_minimal_classification.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/examples/01_minimal_classification.py)
 line by line, tells you exactly what to expect, and lists the mistakes
 beginners actually make with this code.
 
@@ -13,6 +13,11 @@ beginners actually make with this code.
 ```bash
 UV_CACHE_DIR=/tmp/uv-cache uv run python examples/01_minimal_classification.py
 ```
+
+If this fails with a `FileNotFoundError` mentioning `pytorch_model.bin`, you hit
+the known `tabfm==1.0.0` PyTorch checkpoint filename mismatch. Fix it once by
+running the converter described in
+[02-installation.md §3.5](02-installation.md#35-one-time-weight-conversion-recommended), then rerun the example.
 
 ## 2. What it does, step by step
 
@@ -133,7 +138,7 @@ for why context size matters, and raise
 
 ## 6. Want an interactive version?
 
-[`notebooks/00_beginner_walkthrough.ipynb`](../notebooks/00_beginner_walkthrough.ipynb)
+[`notebooks/00_beginner_walkthrough.ipynb`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/notebooks/00_beginner_walkthrough.ipynb)
 covers the same ground as this page cell-by-cell, with inline explanations,
 and goes one step further by comparing the default preset against the
 ensemble preset on the same dataset.

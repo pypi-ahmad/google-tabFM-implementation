@@ -1,5 +1,39 @@
 # Release Notes
 
+## v2.1.0 - Reliability + Docs Site + Publishability
+
+This release tightens the repo into a more trustworthy learning resource:
+beginners hit fewer failure traps, the repo is legally unambiguous to
+redistribute, and the documentation is publishable as a GitHub Pages site
+without changing the Markdown-first workflow.
+
+### Added
+- **`LICENSE` (Apache-2.0)** for this educational repository’s own code and docs.
+- **MkDocs site support** (`mkdocs.yml` + `.github/workflows/docs.yml`) so the
+  learning path can be browsed as a rendered handbook on GitHub Pages while
+  keeping Markdown as the source of truth.
+- **`docs/11-datasets-and-licenses.md`**: a single, explicit inventory of the
+  datasets used in `examples/` and `problems/`, including the download URLs and
+  redistribution caveats.
+- **`reports/`**: small, tracked report artifacts (starting with
+  `reports/case_studies_summary.csv`) backing the README and evaluation docs
+  tables without committing raw data or heavyweight outputs.
+
+### Changed
+- **Quickstart + install docs** now proactively route around a known upstream
+  `tabfm==1.0.0` PyTorch checkpoint filename mismatch by recommending the
+  one-time conversion step (`scripts/fetch_tabfm_weights.py`) before the first
+  example run.
+- **`examples/*.py`** now print an actionable fix (with the exact command to
+  run) if the missing-checkpoint error occurs.
+- **Repo hygiene** now explicitly forbids tracked raw data under
+  `notebooks/data/{raw,models}/` in addition to `data/` and `problems/`.
+
+### Fixed
+- Removed a tracked raw dataset file (`notebooks/data/raw/telco_customer_churn.csv`)
+  to keep the repository publishable and consistent with its own `.gitignore`
+  and hygiene policy.
+
 ## v2.0.0 - Zero-to-Mastery Learning Path
 
 This is a ground-up educational overhaul, not an incremental patch. The

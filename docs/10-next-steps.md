@@ -1,7 +1,7 @@
 # 10 — Next Steps
 
-> **You are here:** [Learning path](../README.md#learning-path) → **10 Next Steps**
-> **Previous:** [09 — FAQ](09-faq.md)
+> **You are here:** [Learning path](index.md#learning-path) → **10 Next Steps**
+> **Previous:** [09 — FAQ](09-faq.md) · **Next (optional):** [11 — Datasets & Licenses](11-datasets-and-licenses.md)
 
 If you've worked through 00–09 in order, you can now: explain what TabFM is
 and isn't, install it, run classification and regression workloads, choose
@@ -14,10 +14,10 @@ out to cover.
 
 | If you want... | Go to... |
 |---|---|
-| An interactive, narrated walkthrough | [`notebooks/00_beginner_walkthrough.ipynb`](../notebooks/00_beginner_walkthrough.ipynb) |
-| A reusable multi-dataset benchmark you can extend | [`src/tabfm_benchmark/`](../src/tabfm_benchmark/) — add a new `DatasetSpec` in `datasets.py` and rerun `scripts/run_benchmark.py` |
-| Full, business-realistic, production-style workflows (baseline comparison, model selection, decision policies) | [`problems/`](../problems/) — start with `problem1_telecom_churn` (classification) and `problem5_house_price_prediction` (regression), the two most self-contained |
-| The operational/maintainer manual (CI, releases, runtime internals) | [`HANDBOOK.md`](../HANDBOOK.md) |
+| An interactive, narrated walkthrough | [`notebooks/00_beginner_walkthrough.ipynb`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/notebooks/00_beginner_walkthrough.ipynb) |
+| A reusable multi-dataset benchmark you can extend | [`src/tabfm_benchmark/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/src/tabfm_benchmark) — add a new `DatasetSpec` in `datasets.py` and rerun `scripts/run_benchmark.py` |
+| Full, business-realistic, production-style workflows (baseline comparison, model selection, decision policies) | [`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems) — start with `problem1_telecom_churn` (classification) and `problem5_house_price_prediction` (regression), the two most self-contained |
+| The operational/maintainer manual (CI, releases, runtime internals) | [`HANDBOOK.md`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/HANDBOOK.md) |
 
 A sensible reading order through `problems/` if you want to see the full
 range: `problem1_telecom_churn` → `problem5_house_price_prediction` →
@@ -56,4 +56,6 @@ issue on this repository so the learning path can improve for the next
 person.
 
 ---
-**You've completed the learning path.** ← [Back to the README](../README.md)
+**Optional:** [11 — Datasets & Licenses →](11-datasets-and-licenses.md)
+
+Or: [Back to the docs index](index.md)

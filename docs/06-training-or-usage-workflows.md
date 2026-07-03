@@ -1,6 +1,6 @@
 # 06 — Usage Workflows
 
-> **You are here:** [Learning path](../README.md#learning-path) → **06 Usage Workflows**
+> **You are here:** [Learning path](index.md#learning-path) → **06 Usage Workflows**
 > **Previous:** [05 — Working with Data](05-working-with-data.md) · **Next:** [07 — Evaluation](07-evaluation.md)
 
 This page walks through the two supported workflows (classification,
@@ -34,7 +34,7 @@ Both classes share the same `model` object — loading weights once and
 reusing them across classifier instances (default vs. ensemble, or across
 multiple datasets in a benchmark loop) avoids repeated disk/network I/O.
 This is exactly what
-[`src/tabfm_benchmark/benchmark.py`](../src/tabfm_benchmark/benchmark.py)
+[`src/tabfm_benchmark/benchmark.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/src/tabfm_benchmark/benchmark.py)
 does via `@lru_cache` on `_load_model_for_task`.
 
 ## 2. Regression workflow
@@ -95,17 +95,17 @@ UV_CACHE_DIR=/tmp/uv-cache uv run python scripts/run_benchmark.py \
 
 This runs TabFM's ensemble preset across the seven built-in scikit-learn
 datasets defined in
-[`src/tabfm_benchmark/datasets.py`](../src/tabfm_benchmark/datasets.py)
+[`src/tabfm_benchmark/datasets.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/src/tabfm_benchmark/datasets.py)
 (iris, wine, breast cancer, digits, covtype, diabetes, california housing)
 and writes per-dataset and summary results. Read
-[`src/tabfm_benchmark/benchmark.py`](../src/tabfm_benchmark/benchmark.py)
+[`src/tabfm_benchmark/benchmark.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/src/tabfm_benchmark/benchmark.py)
 end to end once you're comfortable with the basics — it's under 400 lines
 and is this repo's clearest example of a production-shaped (not notebook)
 TabFM integration.
 
 ## 5. Going further: the advanced case studies
 
-Once you're comfortable with the workflows above, [`problems/`](../problems/)
+Once you're comfortable with the workflows above, [`problems/`](https://github.com/pypi-ahmad/google-tabFM-implementation/tree/main/problems)
 contains eight full business-style case studies (churn, fraud, pricing,
 attrition, loan risk) that combine TabFM default + ensemble presets, an
 XGBoost baseline, model selection ("champion" picking), and
@@ -116,7 +116,7 @@ They assume everything in this doc and [05](05-working-with-data.md) — see
 ## References
 
 - [`tabfm/src/classifier_and_regressor.py`](https://github.com/google-research/tabfm/blob/main/tabfm/src/classifier_and_regressor.py) — authoritative source for every method/parameter shown above
-- [`src/tabfm_benchmark/benchmark.py`](../src/tabfm_benchmark/benchmark.py) — this repo's reusable benchmark implementation
+- [`src/tabfm_benchmark/benchmark.py`](https://github.com/pypi-ahmad/google-tabFM-implementation/blob/main/src/tabfm_benchmark/benchmark.py) — this repo's reusable benchmark implementation
 
 ---
 **Next:** [07 — Evaluation →](07-evaluation.md)

@@ -20,7 +20,7 @@ if [ -n "$large_files" ]; then
 fi
 
 echo "[hygiene] checking disallowed tracked paths..."
-disallowed_regex='^(data/raw/|problems/[^/]+/data/raw/|problems/[^/]+/data/models/)'
+disallowed_regex='^(data/raw/|data/models/|notebooks/data/raw/|notebooks/data/models/|problems/[^/]+/data/raw/|problems/[^/]+/data/models/)'
 tracked_disallowed=$(git ls-files | grep -E "$disallowed_regex" || true)
 
 if [ -n "$tracked_disallowed" ]; then
