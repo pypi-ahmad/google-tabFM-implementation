@@ -1,5 +1,26 @@
 # Release Notes
 
+## v1.0.3 - Release Publisher Hardening
+
+### Highlights
+- Replaced `softprops/action-gh-release@v2` in `.github/workflows/release.yml` with direct `gh` CLI publishing to eliminate Node 20 deprecation exposure.
+- Added idempotent release behavior:
+  - if the tag release already exists, edit notes/title and re-upload `HANDBOOK.pdf` with `--clobber`;
+  - if it does not exist, create the release and attach `HANDBOOK.pdf`.
+- Kept full release gate parity with CI (hygiene checks, tests, CLI contract checks) before publish.
+
+### Verification
+Commands executed:
+
+```bash
+./scripts/validate_repo_hygiene.sh
+UV_CACHE_DIR=/tmp/uv-cache uv run pytest
+```
+
+Observed status:
+- Hygiene checks passed.
+- `7 passed, 1 warning` for test suite.
+
 ## v1.0.2 - Workflow Compatibility Patch
 
 ### Highlights

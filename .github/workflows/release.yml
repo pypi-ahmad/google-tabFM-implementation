@@ -50,10 +50,17 @@ jobs:
         run: uv run python scripts/run_strict_e2e.py --help
 
       - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          body_path: RELEASE_NOTES.md
-          files: |
-            HANDBOOK.pdf
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release edit "${GITHUB_REF_NAME}" \
+              --title "${GITHUB_REF_NAME}" \
+              --notes-file RELEASE_NOTES.md
+            gh release upload "${GITHUB_REF_NAME}" HANDBOOK.pdf --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" \
+              --title "${GITHUB_REF_NAME}" \
+              --notes-file RELEASE_NOTES.md \
+              HANDBOOK.pdf
+          fi
