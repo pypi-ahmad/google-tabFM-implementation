@@ -1,5 +1,24 @@
 # Release Notes
 
+## v1.0.2 - Workflow Compatibility Patch
+
+### Highlights
+- Fixed GitHub Action resolution by pinning `astral-sh/setup-uv` to `v8.2.0`.
+- Upgraded `actions/checkout` to `v6` and `actions/setup-python` to `v6` to remove Node 20 deprecation risk on hosted runners.
+- Revalidated CI gates after workflow updates.
+
+### Verification
+Commands executed:
+
+```bash
+./scripts/validate_repo_hygiene.sh
+UV_CACHE_DIR=/tmp/uv-cache uv run pytest
+```
+
+Observed status:
+- Hygiene checks passed.
+- `7 passed, 1 warning` for test suite.
+
 ## v1.0.1 - CI and Release Automation Hardening
 
 ### Highlights
